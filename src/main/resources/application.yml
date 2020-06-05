@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  thymeleaf:
+    cache: false
+
+app:
+  security:
+    oauth2:
+#      client1:
+#         client-id: oAuth2JwtMovieClientID1
+#         client-secret: abcdef
+#         user-authorization-uri: http://localhost:8082/oauth-server/oauth/authorize
+#         access-token-uri: http://localhost:8082/oauth-server/oauth/token
+#         scope: read, movie
+#         redirect-uri-movie: http://localhost:8080/movie/index
+      client:
+        client-id: oAuth2JwtClientID
+        client-secret: abcdef
+        user-authorization-uri: http://localhost:8082/oauth-server/oauth/authorize
+        access-token-uri: http://localhost:8082/oauth-server/oauth/token
+        scope: read, windmap
+        redirect-uri-windmap: http://localhost:8080/windmap/index
+        redirect-uri-up: http://localhost:8080/up/index
+        redirect-uri-down: http://localhost:8080/down/index
+        redirect-uri-right: http://localhost:8080/right/index
+        redirect-uri-left: http://localhost:8080/left/index
+        redirect-uri-save: http://localhost:8080/save/index
+
+windmap:
+  base-uri: http://localhost:8081/oauth-resource/windmap
+
+#movie:
+#  base-uri: http://localhost:8081/oauth-resource/movie

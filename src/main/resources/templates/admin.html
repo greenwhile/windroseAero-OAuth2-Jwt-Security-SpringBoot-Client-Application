@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Hello Spring Security</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link type="text/css" rel="stylesheet" href="/webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css}" />
+    <link type="text/css" rel="stylesheet" href="/custom/css/windmap.style.css" th:href="@{/custom/css/windmap.style.css}" />
+
+</head>
+<body>
+
+<div th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">
+    Welcome <span sec:authentication="name"></span><br>
+    Assigned roles <span sec:authentication="principal.authorities"></span>
+    <div>
+        <form action="#" th:action="@{/logout}" method="post">
+            <input type="submit" value="Logout"/>
+        </form>
+    </div>
+</div>
+<!--    <div th:include="fragments/nav :: nav">&nbsp;</div>-->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary" th:fragment="nav">
+    <a class="navbar-brand" href="#"><i class="fas fa-plane-departure"></i> WindRose Aero</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/index' ? 'active':''}">
+                <a class="nav-link" href="/index" th:href="@{/index}"><i class="fa fa-fw fa-home"></i><span>Home</span></a>
+
+            </li>
+            <li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/modal' ? 'active':''}">
+                <a class="nav-link" href="/modal" th:href="@{/modal}" data-toggle="modal" data-target="#searchModal"><i class='fas fa-wind'></i>Search</a>
+                <!-- Modal -->
+<!--                <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true" th:fragment="modal ">-->
+<!--                    <div class="modal-dialog" role="document">-->
+<!--                        <div class="modal-content">-->
+<!--                            <div class="modal-header">-->
+<!--                                <h5 class="modal-title" id="searchModalLabel">Wind-Temperature chart selection</h5>-->
+<!--                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                                    <span aria-hidden="true">&times;</span>-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                            <div class="modal-body">-->
+<!--                                <form action="#" th:action="@{/search}" th:object="${windmapComponent}" method="post" >-->
+<!--                                    <div class="form-group container">-->
+<!--                                        <div id="area" class="content" style="position: relative; width: 74.5%; float: left;">-->
+<!--                                            <label>Area</label>-->
+<!--                                            <select ng class="form-control" name="area" th:field="*{areas}">-->
+<!--                                                <option value=""></option>-->
+<!--                                                <option th:each="area : ${windmapComponent.getAreas()}"-->
+<!--                                                        th:value="${area}"-->
+<!--                                                        th:text="${area}"-->
+<!--                                                        value=""-->
+<!--                                                        required />-->
+<!--                                            </select>-->
+<!--                                        </div>-->
+<!--                                        <div id="date" class="content" style="position: relative; width: 24.5%; float: left;">-->
+<!--                                            <label>Grib2Date</label>-->
+<!--                                            <select class="form-control" name="grib2date" th:field="*{grib2Dates}" required>-->
+<!--                                                <option value=""></option>-->
+<!--                                                <option th:each="date : ${windmapComponent.getGrib2Dates()}"-->
+<!--                                                        th:value="${date}"-->
+<!--                                                        th:text="${date}"-->
+<!--                                                        value=""-->
+<!--                                                        required />-->
+<!--                                            </select>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <div class="form-group container">-->
+<!--                                        <div id="level" class="content" style="position: relative; width: 49.5%; float: left;">-->
+<!--                                            <label>Level</label>-->
+<!--                                            <select class="form-control" name="level" th:field="*{levels}" required>-->
+<!--                                                <option value=""></option>-->
+<!--                                                <option th:each="level : ${windmapComponent.getLevels()}"-->
+<!--                                                        th:value="${level}"-->
+<!--                                                        th:text="${level}"-->
+<!--                                                        value=""-->
+<!--                                                        required />-->
+<!--                                            </select>-->
+<!--                                        </div>-->
+<!--                                        <div id="validity" class="content" style="position: relative; width: 49.5%; float: left;">-->
+<!--                                            <label>Validity</label>-->
+<!--                                            <select class="form-control" name="validity" th:field="*{validities}" required>-->
+<!--                                                <option value=""></option>-->
+<!--                                                <option th:each="validity : ${windmapComponent.getValidities()}"-->
+<!--                                                        th:value="${validity}"-->
+<!--                                                        th:text="${validity}"-->
+<!--                                                        value=""-->
+<!--                                                        required />-->
+<!--                                            </select>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <div class="modal-footer">-->
+<!--                                        <div class="btn-group" role="group">-->
+<!--                                            <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal" style="margin-right: 10px;">Close>></button>-->
+<!--                                            <button type="submit" class="btn btn-outline-primary" style="margin-left: 5px;">Find>></button>-->
+<!--                                            &lt;!&ndash;                                                <button (click)="getAreaList(model)" type="submit" class="btn btn-outline-primary" style="margin-left: 5px;">Area>></button>&ndash;&gt;-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </form>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <!--                    <div th:include="fragments/modal :: modal">&nbsp;</div>-->
+            </li>
+        </ul>
+        <span class="navbar-text">
+          Navbar text with an inline element
+        </span>
+    </div>
+</nav>
+
+<h1>Client application non-secured page</h1>
+<br>
+<br>
+
+<div>
+    <form th:action="@{/search}" th:object="${adminObj}">
+        <p th:text="${adminObj}"></p>
+        <p th:text="${id}"></p>
+        <button type="submit" class="btn btn-outline-primary" style="margin-left: 5px;">Get>></button>
+    </form>
+</div>
+
+<br>
+<br>
+
+<p>Click <a href="/secured/index" th:href="@{/secured/index}">here</a> to take you to client secured page.</p>
+
+<script src="/webjars/jquery/dist/jquery.min.js" th:src="@{/webjars/jquery/dist/jquery.min.js}" ></script>
+<script src="/webjars/bootstrap/4.4.1/dist/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/4.4.1/dist/js/bootstrap.min.js}" ></script>
+<script src="/webjars/bootstrap/4.4.1/dist/js/bootstrap.bundle.min.js" th:src="@{/webjars/bootstrap/4.4.1/dist/js/bootstrap.bundle.min.js}" ></script>
+<script src="/webjars/angular/1.7.9/angular.min.js" th:src="@{/webjars/angular/1.7.9/angular.min.js}" ></script>
+
+</body>
+</html>
+

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>Hello Spring Security</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link type="text/css" rel="stylesheet" href="/webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css"
+          th:href="@{/webjars/bootstrap/4.4.1/dist/css/bootstrap.min.css}"/>
+    <link type="text/css" rel="stylesheet" href="/custom/css/windmap.style.css"
+          th:href="@{/custom/css/windmap.style.css}"/>
+    <style type="text/css">
+        .container {
+            display: flex;
+        }
+
+        /*.up[disabled], .down[disabled], .right[disabled], .left[disabled] {*/
+        /*    background-color: #FF85A1*/
+        /*}*/
+        /*img {*/
+        /*    width: 900px;*/
+        /*    height: 600px;*/
+        /*    background: #FFFFFF;*/
+        /*    opacity: 0.1;*/
+        /*}*/
+
+        /*#slider{*/
+        /*    width: 1000px;*/
+        /*    height: 500px;*/
+        /*    margin: 20px auto;*/
+        /*    position: relative;*/
+        /*    border: 10px solid white;*/
+        /*    box-shadow: 0px 0px 5px 2px #ccc;*/
+        /*}*/
+        /*button{*/
+        /*    padding: 20px;*/
+        /*    border: none;*/
+        /*    background: #37f;*/
+        /*    font-size: 30px;*/
+        /*    color: white;*/
+        /*    position: absolute;*/
+        /*    top:45%;*/
+        /*    cursor: pointer;*/
+        /*}*/
+        .right {
+            border-radius: 10px 0px 0px 10px;
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            margin: 35% 0;
+        }
+        .left {
+            border-radius: 0px 10px 10px 0px;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            margin: 35% 0;
+        }
+        .up {
+            border-radius: 0px 0px 10px 10px;
+            position: absolute;
+            top: 0px;
+            margin: 0 45%;
+        }
+        .down {
+            border-radius: 10px 10px 0px 0px;
+            position: absolute;
+            bottom: 0px;
+            margin: 0 45%;
+        }
+        .save {
+            border-radius: 10px 10px 10px 10px;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            margin: 10% 10%;
+        }
+
+        /*.container {*/
+        /*    !*background: #F8F8FF;*!*/
+        /*    overflow: hidden;*/
+        /*    padding: 5px;*/
+        /*}*/
+        /*.container > div {*/
+        /*    white-space: nowrap;*/
+        /*    position: relative;*/
+        /*}*/
+        /*.content {*/
+        /*    display: inline-block;*/
+        /*    text-align: left;*/
+        /*}*/
+    </style>
+</head>
+<body>
+<!--    <div th:include="fragments/nav :: nav">&nbsp;</div>-->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary" th:fragment="nav">
+    <a class="navbar-brand" href="#"><i class="fas fa-plane-departure"></i> WindRose Aero</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/index' ? 'active':''}">
+                <a class="nav-link" href="/index" th:href="@{/index}"><i class="fa fa-fw fa-home"></i><span>Home</span></a>
+
+            </li>
+            <li class="nav-item" th:classappend="${#httpServletRequest.getRequestURI() == '/modal' ? 'active':''}">
+                <a class="nav-link" href="/modal" th:href="@{/modal}" data-toggle="modal" data-target="#searchModal"><i
+                        class='fas fa-wind'></i>Search</a>
+                <!-- Modal -->
+                <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel"
+                     aria-hidden="true" th:fragment="modal ">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="searchModalLabel">Wind-Temperature chart selection</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="#" th:action="@{/search}" th:object="${windmapComponent}" method="post">
+                                    <div class="form-group container">
+                                        <div id="area" class="content"
+                                             style="position: relative; width: 74.5%; float: left;">
+                                            <label>Area</label>
+                                            <select class="form-control" name="area" th:field="*{areas}">
+                                                <option th:each="area : ${windmapComponent.getAreas()}"
+                                                        th:value="${area}"
+                                                        th:text="${area}"
+                                                        value=""
+                                                        required/>
+                                            </select>
+                                        </div>
+                                        <div id="date" class="content"
+                                             style="position: relative; width: 24.5%; float: left;">
+                                            <label>Grib2Date</label>
+                                            <select class="form-control" name="grib2date" th:field="*{grib2Dates}"
+                                                    required>
+                                                <option th:each="date : ${windmapComponent.getGrib2Dates()}"
+                                                        th:value="${date}"
+                                                        th:text="${date}"
+                                                        value=""
+                                                        required/>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group container">
+                                        <div id="level" class="content"
+                                             style="position: relative; width: 49.5%; float: left;">
+                                            <label>Level</label>
+                                            <select class="form-control" name="level" th:field="*{levels}" required>
+                                                <option th:each="level : ${windmapComponent.getLevels()}"
+                                                        th:value="${level}"
+                                                        th:text="${level}"
+                                                        value=""
+                                                        required/>
+                                            </select>
+                                        </div>
+                                        <div id="validity" class="content"
+                                             style="position: relative; width: 49.5%; float: left;">
+                                            <label>Validity</label>
+                                            <select class="form-control" name="validity" th:field="*{validities}"
+                                                    required>
+                                                <option th:each="validity : ${windmapComponent.getValidities()}"
+                                                        th:value="${validity}"
+                                                        th:text="${validity}"
+                                                        value=""
+                                                        required/>
+                                            </select>
+                                        </div>
+                                        <p th:object="${action}" th:text="action"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="btn-group" role="group">
+                                            <button type="reset" class="btn btn-outline-secondary" data-dismiss="modal"
+                                                    style="margin-right: 10px;">Close>>
+                                            </button>
+                                            <button name="action" value="current" type="submit"
+                                                    class="btn btn-outline-primary" style="margin-left: 5px;">Find>>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--                    <div th:include="fragments/modal :: modal">&nbsp;</div>-->
+            </li>
+        </ul>
+
+    </div>
+</nav>
+
+<div class="container" style="margin-top: 20px;">
+
+    <div>
+        <h1>Client application welcome page</h1>
+        <br>
+        <br>
+        <p>Click <a href="/secured/index" th:href="@{/secured/index}">here</a> to take you to client secured page.</p>
+        <br>
+        <label>File <span th:text="${imageFilename}"></span></label>
+    </div>
+<!--    style="background-color: pink"-->
+    <div>
+        <div class="container">
+            <div style="background-color: antiquewhite">
+                <form th:action="@{/search}" th:object="${windmapComponent}" th:method="get">
+                    <div class="btn-group-custom" style="position: relative;">
+                        <!-- Local variable: firstName, lastName, fullName -->
+<!--                        <div th:with="area = 'EurAfr'">-->
+<!--                            First Name: <span th:utext="${area}"></span>-->
+<!--                            <br>-->
+<!--                        </div>-->
+                        <div th:if="${imageFilenameUrl != null}">
+                            <div th:if="${windmapComponent.isEurAfrTerritory() == false}">
+<!--                                <p>Not EurAfr</p>-->
+                                <img th:object="${imageFilenameUrl}" th:src="@{${imageFilenameUrl}}" alt="Windmap"
+                                     width="900" height="650">
+                            </div>
+                            <div th:unless="${windmapComponent.isEurAfrTerritory() == false}">
+<!--                                <p>It is EurAfr</p>-->
+                                <img th:object="${imageFilenameUrl}" th:src="@{${imageFilenameUrl}}" alt="Windmap"
+                                     width="650" height="900">
+                            </div>
+                        </div>
+                        <div th:unless="${imageFilenameUrl != null}">
+                            <!--                                        <p>FALSE</p>-->
+                            <img src="airplane_with_black_and_white_map.jpeg"
+                                 th:src="@{airplane_with_black_and_white_map.jpeg}" alt="Windmap" width="900"
+                                 height="650" style="background: #FFFFFF; opacity: 0.1;">
+                        </div>
+
+                        <button name="action" value="up" type="submit"
+                                th:disabled="${windmapComponent.getLevelIndex() eq 0 || windmapComponent.getLevelIndex() eq null}"
+                                class="up fa fa-chevron-up btn btn-outline-primary"> Up>>
+                        </button>
+                        <button name="action" value="down" type="submit"
+                                th:disabled="${windmapComponent.getLevelIndex() eq 16 || windmapComponent.getLevelIndex() eq null}"
+                                class="down fa fa-chevron-down btn btn-outline-primary"> Down>>
+                        </button>
+                        <button name="action" value="left" type="submit"
+                                th:disabled="${windmapComponent.getValidityIndex() eq 0 || windmapComponent.getValidityIndex() eq null}"
+                                class="left fa fa-chevron-left btn btn-outline-primary"> Left>>
+                        </button>
+                        <button name="action" value="right" type="submit"
+                                th:disabled="${windmapComponent.getValidityIndex() eq 16 || windmapComponent.getValidityIndex() eq null}"
+                                class="right fa fa-chevron-right btn btn-outline-primary"> Right>>
+                        </button>
+                        <button name="action" value="save" type="submit" th:disabled="${imageFilenameUrl eq null}"
+                                class="save fa fa-chevron-up btn btn-outline-primary">Save>>
+                        </button>
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                    </div>
+
+                </form>
+            </div>
+
+            <div >
+                <div th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">
+                    Welcome <span sec:authentication="name"></span><br>
+                    Assigned roles <span sec:authentication="principal.authorities"></span>
+                    <div>
+                        <form action="#" th:action="@{/logout}" method="post">
+                            <input type="submit" value="Logout"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- replace the all index.html file with an #admin-div fragment -->
+<!--    <div id="admin-div"></div>-->
+<!--    <div th:replace="~{index :: #admin-div}"></div>-->
+
+<!--    <a href="" th:href="@{/admin-reload}">-->
+<!--        <span>Edit</span>-->
+<!--    </a>-->
+<!--    <br>-->
+
+
+<!--    <div>-->
+<!--        <img src="airplane_in_sky.jpeg" th:src="@{airplane_in_sky.jpeg}">-->
+<!--        <img src="airplane_with_black_and_white_map.jpeg" th:src="@{airplane_with_black_and_white_map.jpeg}">-->
+<!--        <img src="airplane_with_colored_map.jpeg" th:src="@{airplane_with_colored_map.jpeg}">-->
+<!--        <img src="/airplane_in_sky.jpeg" th:src="@{/airplane_in_sky.jpeg}">-->
+<!--    </div>-->
+
+<!--    <div th:include="~{fragments/adminForm :: admin_form(${adminObj}, ${id})}">-->
+<!--    </div>-->
+
+<!--    <div th:fragment="admin_form(adminObj, id)">-->
+<!--        <th:div th:replace="admin_form(${adminObj})"/>-->
+<!--    </div>-->
+
+<!--    <div th:replace="~{fragments/adminForm :: admin_form('admin', 8)}"></div>-->
+
+
+<!--    <div th:fragment="admin_form(adminObj, id)" >-->
+<!--        <form th:object="${adminObj}">-->
+<!--            <p th:text="${adminObj}"></p>-->
+<!--            <p th:text="${id}"></p>-->
+<!--        </form>-->
+<!--    </div>-->
+
+<!--    <div th:replace="~{fragments/adminForm :: admin_form(adminObj=${adminObj}, id=${id})}">-->
+<!--    </div>-->
+
+<!--    <div th:fragment="admin_form(adminObj, id)">-->
+<!--    </div>-->
+
+<!--    <div th:replace="fragments/adminForm :: admin_form(adminObj, id)" th:with="adminObj='${adminObj}', id='${id}'">-->
+<!--        <p th:text="${id}"></p>-->
+<!--    </div>-->
+
+
+<!--    <div th:replace="fragments/adminForm :: admin_form('admin', 9)"></div>-->
+
+<!-- buttons for controls slider -->
+<!--    <div id="box">-->
+<!--        <div *ngIf=obj>-->
+<!--            <input name="box" th:object="${windmap}" #img="ngModel" style="display: none">-->
+<!--            <button [disabled]='obj.validityIndex === 0 || obj.validityIndex === null' class="prew fa fa-chevron-left" ng-class="{'diabled-class': obj.validityIndex === 0}" (click)="getLeftImage($event, imageName)"></button>-->
+<!--            <button [disabled]='obj.validityIndex === 6 || obj.validityIndex === null' class="next fa fa-chevron-right" ng-class="{'diabled-class': obj.validityIndex === 6}"(click)="getRightImage($event, imageName)"></button>-->
+<!--            <button [disabled]="obj.levelIndex === 0 || obj.levelIndex === null" class="top fa fa-chevron-up" (click)="getTopImage($event, imageName)"></button>-->
+<!--            <button [disabled]="obj.levelIndex === 16 || obj.levelIndex === null" class="down fa fa-chevron-down" (click)="getDownImage($event, imageName)"></button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<br>
+<br>
+
+<script src="/webjars/jquery/dist/jquery.min.js" th:src="@{/webjars/jquery/dist/jquery.min.js}"></script>
+<script src="/webjars/bootstrap/4.4.1/dist/js/bootstrap.min.js"
+        th:src="@{/webjars/bootstrap/4.4.1/dist/js/bootstrap.min.js}"></script>
+<script src="/webjars/bootstrap/4.4.1/dist/js/bootstrap.bundle.min.js"
+        th:src="@{/webjars/bootstrap/4.4.1/dist/js/bootstrap.bundle.min.js}"></script>
+<script src="/webjars/angular/1.7.9/angular.min.js" th:src="@{/webjars/angular/1.7.9/angular.min.js}"></script>
+
+</body>
+</html>
